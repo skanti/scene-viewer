@@ -1,0 +1,23 @@
+# folders
+.DS_Store
+node_modules
+client/dist
+tmp
+static
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+log.txt
+
+__pycache__
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
