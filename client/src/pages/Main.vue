@@ -4,7 +4,7 @@
     <!-- header -->
     <div class='q-ma-md'>
       <div class='row items-center q-gutter-sm'>
-        <div class='text-h5 q-mr-lg text-center self-center text-bold'> SceneCompletion Viewer </div>
+        <div class='text-h5 q-mr-lg text-center self-center text-bold'> Scene Viewer </div>
           <q-btn-toggle size='sm' color='white' text-color='dark' toggle-color="blue-5" v-model='settings.camera_up' unelevated dense no-wrap no-caps
             :options="[{label: 'Y-up', value: 'y'}, {label: 'Z-up', value: 'z'} ]" @update:model-value="v => onclick_up_axis(v)" />
           <q-btn size='sm' label='Dummy' color='blue-5' icon='filter_center_focus' @click='onclick_recenter' unelevated no-caps dense />
@@ -38,14 +38,14 @@
       <div class='col-6'>
         <div id='div_scene0' style='background-color:#777777; width:100%;height:50vh'>
           <div class='absolute q-pa-xs q-gutter-xs'>
-            <q-btn size='sm' label='Source' color='primary' text-color='white' square dense unelevated />
+            <q-btn size='sm' label='Prediction' color='primary' text-color='white' square dense unelevated />
           </div>
         </div>
       </div>
       <div class='col-6'>
         <div id='div_scene1' style='background-color:#777777; width:100%;height:50vh'>
           <div class='absolute q-pa-xs q-gutter-xs'>
-            <q-btn size='sm' label='Target' color='primary' text-color='white' square dense unelevated />
+            <q-btn size='sm' label='GT' color='primary' text-color='white' square dense unelevated />
           </div>
         </div>
       </div>
