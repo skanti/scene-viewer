@@ -28,6 +28,7 @@ export default {
       is_active: false,
       mesh_bbox: null,
       toolbox: null,
+      img_src: { pred: null, gt: null },
     }
   },
   computed: {
@@ -111,7 +112,7 @@ export default {
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: this.experiment_name,
-        output_name: output_name, out: 'gt' } }).then( res => {
+        output_name: output_name, out: 'gt.json' } }).then( res => {
           let data = res.data
           console.log(data);
           this.on_upsert(data, 1);
@@ -121,13 +122,15 @@ export default {
 
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: this.experiment_name,
-        out: 'pred', output_name: output_name } }).then( res => {
+        out: 'pred.json', output_name: output_name } }).then( res => {
           let data = res.data
           this.on_upsert(data, 0);
         }).finally(() => {
           this.loading -= 1;
         });
 
+      this.img_src.pred = `/api/download?project_dir=${this.project_dir}&experiment_name=${this.experiment_name}&output_name=${output_name}&out=pred.png`;
+      console.log(this.img_src.pred)
     },
     render_images(images) {
       images.forEach((img, i) => {

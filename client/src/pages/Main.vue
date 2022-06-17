@@ -41,12 +41,19 @@
             <q-btn size='sm' label='Prediction' color='primary' text-color='white' square dense unelevated />
           </div>
         </div>
+        <div style="margin-top:50px">
+          <q-btn class='q-my-sm' size='sm' label='Prediction' color='primary' text-color='white' square dense unelevated />
+          <img :src='img_src.pred' style='width:100%'/>
+        </div>
       </div>
       <div class='col-6'>
         <div id='div_scene1' style='background-color:#777777; width:100%;height:50vh'>
           <div class='absolute q-pa-xs q-gutter-xs'>
             <q-btn size='sm' label='GT' color='primary' text-color='white' square dense unelevated />
           </div>
+        </div>
+        <div style="margin-top:50px">
+          <img :src='img_src.gt' style='width:100%'/>
         </div>
       </div>
     </div>

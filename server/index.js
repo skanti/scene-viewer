@@ -44,7 +44,7 @@ app.get("/api/outputs", function (req, res, next) {
     if (err)
       return res.send(err);
     outputs = outputs.filter(x => fs.lstatSync(x).isDirectory());
-    outputs = outputs.filter(x => x !== "lightning_logs");
+    outputs = outputs.filter(x => x !== "logs");
     outputs = outputs.map(x => path.basename(x));
     res.send(outputs);
   });
@@ -52,7 +52,7 @@ app.get("/api/outputs", function (req, res, next) {
 
 app.get("/api/download", function (req, res, next) {
   const { project_dir, experiment_name, output_name, out } = req.query;
-  const out_path = `${project_dir}/${experiment_name}/${output_name}/${out}.json`;
+  const out_path = `${project_dir}/${experiment_name}/${output_name}/${out}`;
   spawnSync('ls', [out_path]);
   res.sendFile(out_path);
 });
