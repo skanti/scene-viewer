@@ -1,37 +1,17 @@
-// persistent variables, rest is not saved in local storage
-import { createStore } from 'vuex'
-import createPersistedState from 'vuex-persistedstate';
+import { defineStore } from 'pinia';
 
-const persisted_state = createPersistedState({ });
-// for specific variables add: paths: [ 'project_dir', 'experiment_name', 'output_name' ]
-
-const store = createStore({
-  plugins: [persisted_state],
-  state: {
+export default defineStore('general', {
+  state: () => ({
     project_dir: '',
-    experiment_name: '',
-    output_name: '',
+    experiment_selected: {},
+    output_selected: {},
     settings: {
-      camera_up: 'z',
-      video_mode: false,
+      camera_up: 'z'
     }
-  },
-  mutations: {
-    project_dir(state, project_dir) {
-      state.project_dir = project_dir;
-    },
-    experiment_name(state, experiment_name) {
-      state.experiment_name = experiment_name;
-    },
-    output_name(state, output_name) {
-      state.output_name = output_name;
-    },
-    settings(state, settings) {
-      state.settings = Object.assign({}, state.settings, settings);
-    },
+  }),
+  getters: {
   },
   actions: {
-  }
+  },
+  persist: true
 })
-
-export default store;

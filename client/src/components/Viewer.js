@@ -1,10 +1,9 @@
 import axios from 'axios';
-import path from 'path';
-//import { mapState } from 'vuex'
 import * as THREE from 'three';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { copyToClipboard } from 'quasar'
+import { useQuasar } from 'quasar'
 
 import Renderer from '@/components/Renderer.js';
 import Context from '@/components/Context.js';
@@ -16,9 +15,12 @@ let renderers = [];
 let camera = null;
 let images = [];
 
-export default {
+import { mapWritableState } from 'pinia';
+import useStore from '@/store/index.js';
 
+export default {
   // data
+  inject: ['some_var'],
   data() {
     return {
       options_experiments: [],
@@ -31,28 +33,19 @@ export default {
       img_src: { pred: null, gt: null },
     }
   },
+  setup() {
+    const store = useStore();
+    const $q = useQuasar();
+    return { store, $q };
+  },
   computed: {
-    project_dir: {
-      get () { return this.$store.state.project_dir; },
-      set (v) { this.$store.commit('project_dir', v); }
-    },
-    experiment_name: {
-      get () { return this.$store.state.experiment_name; },
-      set (v) { this.$store.commit('experiment_name', v); }
-    },
-    output_name: {
-      get () { return this.$store.state.output_name; },
-      set (v) { this.$store.commit('output_name', v); }
-    },
-    settings: {
-      get () { return this.$store.state.settings; },
-    },
+    ...mapWritableState(useStore, ['project_dir', 'experiment_selected', 'output_selected', 'settings'])
   },
   mounted() {
+    console.log(this.some_var);
     // load data
     this.get_experiments();
     this.get_outputs();
-    console.log(this.experiment_name);
 
     // init renderer
     const div_scene0 = document.getElementById('div_scene0');
@@ -97,7 +90,7 @@ export default {
       });
     },
     get_outputs() {
-      const experiment_name = this.experiment_name;
+      const experiment_name = this.experiment_selected.id;
       if (!experiment_name)
         return;
       this.loading += 1;
@@ -108,20 +101,20 @@ export default {
       });
     },
     download_output() {
-      const output_name = this.output_name;
+      const experiment_name = this.experiment_selected.id;
+      const output_name = this.output_selected.id;
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;
-      axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: this.experiment_name,
+      axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
         output_name: output_name, out: 'gt.json' } }).then( res => {
           let data = res.data
-          console.log(data);
           this.on_upsert(data, 1);
         }).finally(() => {
           this.loading -= 1;
         });
 
       this.loading += 1;
-      axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: this.experiment_name,
+      axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
         out: 'pred.json', output_name: output_name } }).then( res => {
           let data = res.data
           this.on_upsert(data, 0);
@@ -129,8 +122,7 @@ export default {
           this.loading -= 1;
         });
 
-      this.img_src.pred = `/api/download?project_dir=${this.project_dir}&experiment_name=${this.experiment_name}&output_name=${output_name}&out=pred.png`;
-      console.log(this.img_src.pred)
+      this.img_src.pred = `/api/download?project_dir=${this.project_dir}&experiment_name=${experiment_name}&output_name=${output_name}&out=pred.png`;
     },
     render_images(images) {
       images.forEach((img, i) => {
@@ -178,7 +170,7 @@ export default {
 
     },
     onclick_up_axis(axis) {
-      this.$store.commit('settings', { camera_up: axis});
+      this.settings.camera_up = axis;
 
       renderers.forEach(renderer => {
         let camera = renderer.camera;

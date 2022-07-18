@@ -20,6 +20,31 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+function time_since(date) {
+  let seconds = Math.floor((new Date() - date) / 1000);
+  let interval = seconds / (3600*24*30*12);
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / (3600*24*30);
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / (3600*24);
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+}
+
 // routes
 app.get("/api/experiments", function (req, res, next) {
   const { project_dir } = req.query;
@@ -29,7 +54,14 @@ app.get("/api/experiments", function (req, res, next) {
   glob(search_dir, options, function (err, experiments) {
     if (err)
       return res.send(err);
-    experiments = experiments.map(x => path.basename(x));
+    // get timestamps
+    experiments = experiments.map(x => {
+      const stats = fs.statSync(x);
+      const timestamp = stats.birthtimeMs === 0 ? stats.mtime : stats.birthtime;
+      return { id: path.basename(x), timestamp: timestamp, time_since: time_since(timestamp) };
+    });
+    // sort according to timestamp
+    experiments = experiments.sort((a, b) => b.timestamp - a.timestamp);
     res.send(experiments);
   });
 
@@ -44,8 +76,8 @@ app.get("/api/outputs", function (req, res, next) {
     if (err)
       return res.send(err);
     outputs = outputs.filter(x => fs.lstatSync(x).isDirectory());
-    outputs = outputs.filter(x => x !== "logs");
-    outputs = outputs.map(x => path.basename(x));
+    outputs = outputs.map(x => ({ id: path.basename(x) }));
+    outputs = outputs.filter(x => x.id !== "log");
     res.send(outputs);
   });
 });
