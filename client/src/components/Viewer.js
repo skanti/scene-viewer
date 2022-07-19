@@ -35,8 +35,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    const $q = useQuasar();
-    return { store, $q };
+    const q$ = useQuasar();
+    return { store, q$ };
   },
   computed: {
     ...mapWritableState(useStore, ['project_dir', 'experiment_selected', 'output_selected', 'settings'])
@@ -157,10 +157,10 @@ export default {
 
         meshes.forEach(mesh => renderers[renderer_idx].upsert_mesh(mesh));
         this.ctx.event_bus.emit('new_object');
-        this.$q.notify({ message: 'Loaded!', caption: ':)', color: 'green-5' })
+        this.q$.notify({ message: 'Loaded!', caption: ':)', color: 'green-5' })
       } catch (err){
         console.log(err);
-        this.$q.notify({ message: err.message, caption: 'Error', color: 'red-5' })
+        this.q$.notify({ message: err.message, caption: 'Error', color: 'red-5' })
       }
     },
     onclick_recenter() {
@@ -196,7 +196,12 @@ export default {
           light.position.set(0.1, 1.0, 0.1);
       });
     },
-
+    click_copy_to_clipboard (e, text) {
+      copyToClipboard(text).then(() => {
+        this.q$.notify({ message: 'Copied to clipboard!', caption: text, icon: 'fas fa-check-circle', color: 'green-5' });
+      });
+      e.stopPropagation();
+    },
     advance() {
       requestAnimationFrame(this.advance_ref);
       if (!this.is_active)

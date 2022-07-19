@@ -17,6 +17,10 @@
         </q-input>
         <q-select v-if='project_dir' :model-value='experiment_selected.id' :options='options_experiments' label='Experiment' style='width:400px'
           @update:model-value='x => { experiment_selected = x; get_outputs()}' outlined >
+          <template v-slot:prepend>
+            <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e,
+              experiment_selected.id)' dense flat/>
+          </template>
           <template v-slot:option="scope">
             <q-item v-bind="scope.itemProps">
               <q-item-section>
@@ -31,6 +35,10 @@
         </q-select>
         <q-select v-if='experiment_selected' :model-value='output_selected.id' :options='options_outputs' label='Output' style='width:400px'
           @update:model-value='x => { output_selected = x; download_output() }' outlined >
+          <template v-slot:prepend>
+            <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e,
+              output_selected.id)' dense flat/>
+          </template>
           <template v-slot:option="scope">
             <q-item v-bind="scope.itemProps">
               <q-item-section>
