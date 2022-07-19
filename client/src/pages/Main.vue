@@ -52,7 +52,12 @@
         </q-select>
         <q-btn :loading='loading > 0' :color='loading? "blue-5" : "green-5"' icon='fas fa-check-circle' flat />
       </div>
+
+      <div class='q-mt-md' v-if='!!experiment_selected.id && !!output_selected.id'>
+        Full directory: <b> {{full_path}} <i class='fas fa-copy' @click='e => click_copy_to_clipboard(e, full_path)'></i></b>
+      </div>
     </div>
+
     <!-- header -->
 
     <!-- main -->

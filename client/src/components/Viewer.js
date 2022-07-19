@@ -30,6 +30,7 @@ export default {
       is_active: false,
       mesh_bbox: null,
       toolbox: null,
+      full_path: '',
       img_src: { pred: null, gt: null },
     }
   },
@@ -103,6 +104,7 @@ export default {
     download_output() {
       const experiment_name = this.experiment_selected.id;
       const output_name = this.output_selected.id;
+      this.full_path = `${this.project_dir}/${experiment_name}/${output_name}`;
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
