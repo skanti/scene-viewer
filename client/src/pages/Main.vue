@@ -32,18 +32,10 @@
           <q-btn color='blue-5' icon='fas fa-sync' @click='get_outputs' outline dense />
         </template>
       </q-select>
-      <q-select v-if='experiment_selected' :model-value='output_selected.id' :options='options_outputs' label='Output' style='width:400px'
-        @update:model-value='x => { output_selected = x; download_output() }' outlined >
+      <q-select v-if='experiment_selected' v-model='selected_id' :options='options_outputs.map(x => x.id)' label='Output' style='width:400px'
+        @update:model-value='x => { download_output() }' outlined >
         <template v-slot:prepend>
-          <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e,
-            output_selected.id)' dense flat/>
-        </template>
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section>
-              <q-item-label>{{ scope.opt.id }}</q-item-label>
-            </q-item-section>
-          </q-item>
+          <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e, selected_id)' dense flat/>
         </template>
         <template v-slot:after>
           <q-btn color='blue-5' icon='fas fa-download' @click='download_output' outline dense />
@@ -52,7 +44,7 @@
       <q-btn :loading='loading > 0' :color='loading? "blue-5" : "green-5"' icon='fas fa-check-circle' flat />
     </div>
 
-    <div class='q-mt-md' v-if='!!experiment_selected.id && !!output_selected.id'>
+    <div class='q-mt-md' v-if='!!experiment_selected.id && !!selected_id'>
       Full directory: <b> {{full_path}} <i class='fas fa-copy' @click='e => click_copy_to_clipboard(e, full_path)'></i></b>
     </div>
 

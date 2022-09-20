@@ -40,7 +40,7 @@ export default {
     return { store, q$ };
   },
   computed: {
-    ...mapWritableState(useStore, ['project_dir', 'experiment_selected', 'output_selected', 'settings'])
+    ...mapWritableState(useStore, ['project_dir', 'experiment_selected', 'selected_id', 'settings'])
   },
   mounted() {
     console.log(this.some_var);
@@ -103,7 +103,7 @@ export default {
     },
     download_output() {
       const experiment_name = this.experiment_selected.id;
-      const output_name = this.output_selected.id;
+      const output_name = this.selected_id;
       this.full_path = `${this.project_dir}/${experiment_name}/${output_name}`;
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;

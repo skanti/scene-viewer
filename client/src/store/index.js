@@ -4,7 +4,7 @@ export default defineStore('general', {
   state: () => ({
     project_dir: '',
     experiment_selected: {},
-    output_selected: {},
+    selected_id: '',
     settings: {
       camera_up: 'z'
     }
