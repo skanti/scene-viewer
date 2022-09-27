@@ -69,7 +69,7 @@ app.get("/api/experiments", function (req, res, next) {
 
 app.get("/api/outputs", function (req, res, next) {
   const { project_dir, experiment_name } = req.query;
-  const search_dir = project_dir + "/" + experiment_name + "/*";
+  const search_dir = project_dir + "/" + experiment_name + "/out/*";
   const options = { };
   spawnSync('ls', [search_dir]);
   glob(search_dir, options, function (err, outputs) {
@@ -84,7 +84,7 @@ app.get("/api/outputs", function (req, res, next) {
 
 app.get("/api/download", function (req, res, next) {
   const { project_dir, experiment_name, output_name, out } = req.query;
-  const out_path = `${project_dir}/${experiment_name}/${output_name}/${out}`;
+  const out_path = `${project_dir}/${experiment_name}/out/${output_name}/${out}`;
   spawnSync('ls', [out_path]);
   res.sendFile(out_path);
 });

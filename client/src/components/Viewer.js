@@ -104,7 +104,7 @@ export default {
     download_output() {
       const experiment_name = this.experiment_selected.id;
       const output_name = this.selected_id;
-      this.full_path = `${this.project_dir}/${experiment_name}/${output_name}`;
+      this.full_path = `${this.project_dir}/${experiment_name}/out/${output_name}`;
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
