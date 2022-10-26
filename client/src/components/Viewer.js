@@ -101,6 +101,24 @@ export default {
         this.loading -= 1;
       });
     },
+    parse_language(language_str) {
+      language_str = language_str.split('\n');
+      const entities = [];
+      for (let row of language_str) {
+        const params_str = row.split(',');
+        const cmd = params_str.shift();
+        const params = Object.fromEntries(params_str.map( x => x.trim().split("=")));
+        for (let k in params) {
+          const v = parseFloat(params[k]);
+          if (!isNaN(v)) {
+            params[k] = v;
+          }
+        }
+        entities.push([cmd, params]);
+      }
+      const language = { type: 'architecture', language: entities };
+      return language;
+    },
     download_output() {
       const experiment_name = this.experiment_selected.id;
       const output_name = this.selected_id;
@@ -108,18 +126,20 @@ export default {
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
-        output_name: output_name, out: 'gt.json' } }).then( res => {
-          let data = res.data
-          this.on_upsert(data, 1);
+        output_name: output_name, out: 'gt.txt' } }).then( res => {
+          const lang = this.parse_language(res.data);
+          lang.id = 'gt';
+          this.on_upsert(lang, 1);
         }).finally(() => {
           this.loading -= 1;
         });
 
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
-        out: 'pred.json', output_name: output_name } }).then( res => {
-          let data = res.data
-          this.on_upsert(data, 0);
+        out: 'pred.txt', output_name: output_name } }).then( res => {
+          const lang = this.parse_language(res.data);
+          lang.id = 'pred';
+          this.on_upsert(lang, 0);
         }).finally(() => {
           this.loading -= 1;
         });
