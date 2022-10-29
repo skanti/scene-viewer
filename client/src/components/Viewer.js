@@ -126,8 +126,8 @@ export default {
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
-        output_name: output_name, out: 'gt.txt' } }).then( res => {
-          const lang = this.parse_language(res.data);
+        output_name: output_name, out: 'gt.json' } }).then( res => {
+          const lang = res.data;
           lang.id = 'gt';
           this.on_upsert(lang, 1);
         }).finally(() => {
@@ -136,8 +136,8 @@ export default {
 
       this.loading += 1;
       axios.get( '/api/download', { params: { project_dir: this.project_dir, experiment_name: experiment_name,
-        out: 'pred.txt', output_name: output_name } }).then( res => {
-          const lang = this.parse_language(res.data);
+        out: 'pred.json', output_name: output_name } }).then( res => {
+          const lang = res.data;
           lang.id = 'pred';
           this.on_upsert(lang, 0);
         }).finally(() => {
