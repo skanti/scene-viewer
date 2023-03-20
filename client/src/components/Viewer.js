@@ -23,8 +23,8 @@ export default {
   inject: ['some_var'],
   data() {
     return {
-      options_experiments: [],
-      options_outputs: [],
+      experiments: [],
+      outputs: [],
       ctx: new Context(),
       loading: 0,
       is_active: false,
@@ -39,10 +39,9 @@ export default {
     return { store, q$ };
   },
   computed: {
-    ...mapWritableState(useStore, ['project_dir', 'project_dir_history', 'experiment_selected', 'selected_id', 'settings'])
+    ...mapWritableState(useStore, ['project_dir', 'project_dir_history', 'experiment_selected', 'output_selected', 'settings'])
   },
   mounted() {
-    console.log(this.some_var);
     // load data
     this.get_experiments();
     this.get_outputs();
@@ -88,10 +87,16 @@ export default {
         this.project_dir_history.unshift(this.project_dir);
         this.project_dir_history = this.project_dir_history.slice(0, 5);
       }
+      console.log(this.project_dir);
 
       this.loading += 1;
       axios.get( '/api/experiments', { params: { project_dir: project_dir } }).then( res => {
-        this.options_experiments = res.data;
+        this.experiments = res.data;
+        const has_experiment = this.experiments.find(x => x.id === this.experiment_selected.id);
+        if (!has_experiment) {
+          this.experiment_selected = [];
+          this.output_selected = '';
+        }
       }).finally(() => {
         this.loading -= 1;
       });
@@ -102,7 +107,7 @@ export default {
         return;
       this.loading += 1;
       axios.get( '/api/outputs', { params: { experiment_name: experiment_name, project_dir: this.project_dir } }).then( res => {
-        this.options_outputs = res.data;
+        this.outputs = res.data;
       }).finally(() => {
         this.loading -= 1;
       });
@@ -127,7 +132,7 @@ export default {
     },
     download_output() {
       const experiment_name = this.experiment_selected.id;
-      const output_name = this.selected_id;
+      const output_name = this.output_selected;
       this.full_path = `${this.project_dir}/${experiment_name}/out/${output_name}`;
       renderers.forEach(renderer => renderer.clear_scene());
       this.loading += 1;

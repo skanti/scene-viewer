@@ -12,7 +12,7 @@
         <template v-slot:append>
           <q-btn-dropdown class='q-pa-xs' flat>
             <q-list>
-              <q-item v-for='v in project_dir_history' :key='"hist" + v' @click="() => { project_dir = v; }" v-close-popup clickable>
+              <q-item v-for='v in project_dir_history' :key='"hist" + v' @click="() => { project_dir = v; get_experiments(); }" v-close-popup clickable>
                 <q-item-section>
                   <q-item-label>{{v}}</q-item-label>
                 </q-item-section>
@@ -22,7 +22,7 @@
         </template>
       </q-input>
 
-      <q-select v-if='project_dir' :model-value='experiment_selected.id' :options='options_experiments' label='Experiment' style='width:400px'
+      <q-select v-if='project_dir' :model-value='experiment_selected.id' :options='experiments' label='Experiment' style='width:400px'
         @update:model-value='x => { experiment_selected = x; get_outputs()}' outlined >
         <template v-slot:prepend>
           <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e,
@@ -40,10 +40,10 @@
           <q-btn color='blue-5' icon='fas fa-sync' @click='get_outputs' outline dense />
         </template>
       </q-select>
-      <q-select v-if='experiment_selected' v-model='selected_id' :options='options_outputs.map(x => x.id)' label='Output' style='width:400px'
+      <q-select v-if='experiment_selected' v-model='output_selected' :options='outputs.map(x => x.id)' label='Output' style='width:400px'
         @update:model-value='x => { download_output() }' outlined >
         <template v-slot:prepend>
-          <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e, selected_id)' dense flat/>
+          <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e, output_selected)' dense flat/>
         </template>
         <template v-slot:after>
           <q-btn color='blue-5' icon='fas fa-download' @click='download_output' outline dense />
@@ -52,7 +52,7 @@
       <q-btn :loading='loading > 0' :color='loading? "blue-5" : "green-5"' icon='fas fa-check-circle' flat />
     </div>
 
-    <div class='q-mt-md' v-if='!!experiment_selected.id && !!selected_id'>
+    <div class='q-mt-md'>
       Full directory: <b> {{full_path}} <i class='fas fa-copy' @click='e => click_copy_to_clipboard(e, full_path)'></i></b>
     </div>
 

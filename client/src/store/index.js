@@ -5,7 +5,7 @@ export default defineStore('general', {
     project_dir: '',
     project_dir_history: [],
     experiment_selected: {},
-    selected_id: '',
+    output_selected: '',
     settings: {
       camera_up: 'z'
     }
