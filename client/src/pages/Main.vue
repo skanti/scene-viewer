@@ -8,12 +8,20 @@
         :options="[{label: 'Y-up', value: 'y'}, {label: 'Z-up', value: 'z'} ]" @update:model-value="v => onclick_up_axis(v)" />
     </div>
     <div class='row q-gutter-lg'>
-      <q-input v-model='project_dir' label='Project Directory' style='width:300px' debounce='500'
-        input-style='font-size: 0.8em' @update:model-value='get_experiments' outlined >
-        <template v-slot:after>
-          <q-btn color='blue-5' icon='fas fa-sync' @click='get_experiments' outline dense />
+      <q-input class='q-pa-none' v-model='project_dir' label='Project Directory' outlined bottom-slots style='width:400px'>
+        <template v-slot:append>
+          <q-btn-dropdown class='q-pa-xs' flat>
+            <q-list>
+              <q-item v-for='v in project_dir_history' :key='"hist" + v' @click="() => { project_dir = v; }" v-close-popup clickable>
+                <q-item-section>
+                  <q-item-label>{{v}}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </template>
       </q-input>
+
       <q-select v-if='project_dir' :model-value='experiment_selected.id' :options='options_experiments' label='Experiment' style='width:400px'
         @update:model-value='x => { experiment_selected = x; get_outputs()}' outlined >
         <template v-slot:prepend>

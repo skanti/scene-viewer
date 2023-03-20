@@ -28,7 +28,6 @@ export default {
       ctx: new Context(),
       loading: 0,
       is_active: false,
-      mesh_bbox: null,
       toolbox: null,
       full_path: '',
       img_src: { pred: null, gt: null },
@@ -40,7 +39,7 @@ export default {
     return { store, q$ };
   },
   computed: {
-    ...mapWritableState(useStore, ['project_dir', 'experiment_selected', 'selected_id', 'settings'])
+    ...mapWritableState(useStore, ['project_dir', 'project_dir_history', 'experiment_selected', 'selected_id', 'settings'])
   },
   mounted() {
     console.log(this.some_var);
@@ -83,6 +82,13 @@ export default {
       const project_dir = this.project_dir;
       if (!project_dir)
         return;
+      // add to histroy
+      const known = this.project_dir_history.includes(this.project_dir);
+      if (!known) {
+        this.project_dir_history.unshift(this.project_dir);
+        this.project_dir_history = this.project_dir_history.slice(0, 5);
+      }
+
       this.loading += 1;
       axios.get( '/api/experiments', { params: { project_dir: project_dir } }).then( res => {
         this.options_experiments = res.data;
