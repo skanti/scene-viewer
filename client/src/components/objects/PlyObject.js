@@ -3,9 +3,9 @@ import * as THREE from "three";
 import MathHelpers from '@/components/MathHelpers.js';
 
 class PlyObject {
+
   constructor(ctx) {
-    this.ctx = null;
-    this.renderer = null;
+    this.ctx = ctx;
 
     this.id = "";
     this.type = "";
@@ -20,9 +20,6 @@ class PlyObject {
     this.geometry = null;
     this.material = null;
     this.mesh = null;
-
-    this.ctx = ctx;
-    //this.ctx.event_bus.$on("pca", this.on_change_parameters.bind(this));
   }
 
   extract(data) {
@@ -69,8 +66,9 @@ class PlyObject {
     this.geometry.setIndex( this.faces );
     this.geometry.computeVertexNormals();
 
-    this.material = new THREE.MeshLambertMaterial(
-      { color: color, side: THREE.DoubleSide, vertexColors: this.has_vertex_colors });
+    this.material = new THREE.MeshStandardMaterial(
+      { color: color, side: THREE.DoubleSide, vertexColors: this.has_vertex_colors }
+    );
 
     this.mesh = new THREE.Mesh( this.geometry, this.material );
 

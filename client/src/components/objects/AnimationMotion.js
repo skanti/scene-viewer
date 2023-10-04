@@ -1,11 +1,10 @@
 import ThreeHelper from '@/components/objects/ThreeHelper.js';
 
 class AnimationMotion {
+
   constructor(ctx) {
     this.ctx = ctx;
-
     this.type = "";
-
     this.frames = null;
   }
 

@@ -3,9 +3,9 @@ import * as THREE from "three";
 import MathHelpers from '@/components/MathHelpers.js';
 
 class CamObject {
+
   constructor(ctx) {
-    this.ctx = null;
-    this.renderer = null;
+    this.ctx = ctx;
 
     this.id = "";
     this.type = "";
@@ -15,9 +15,6 @@ class CamObject {
 
     this.camera = null;
     this.mesh = null;
-
-    this.ctx = ctx;
-    //this.ctx.event_bus.$on("pca", this.on_change_parameters.bind(this));
   }
 
   extract(data) {

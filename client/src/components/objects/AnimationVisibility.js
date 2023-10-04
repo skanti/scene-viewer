@@ -1,6 +1,3 @@
-import * as THREE from 'three';
-import ThreeHelper from '@/components/objects/ThreeHelper.js';
-
 class AnimationVisibility {
   constructor(ctx) {
     this.ctx = ctx;
@@ -11,8 +8,12 @@ class AnimationVisibility {
   }
 
   make(data) {
-    this.ctx.event_bus.on('play_animation', this.play.bind(this));
-    this.frames = data['data'];
+    this.id = data['id'];
+    this.frames = data['frames'];
+
+    let evt = "play_" + this.id;
+    this.ctx.event_bus.$off(evt);
+    this.ctx.event_bus.$on(evt, this.play.bind(this));
   }
 
   async play(params) {
@@ -22,8 +23,7 @@ class AnimationVisibility {
     const delay = params['delay'];
     const frames_num_total = this.frames.length;
     const timer = ms => new Promise(res => setTimeout(res, ms))
-    const { images } = params;
-    console.log(images);
+
     console.log('frames_num_total', frames_num_total, 'delay', delay);
 
     // collect meshes
@@ -48,11 +48,7 @@ class AnimationVisibility {
       // mesh
       meshes[i].visible = true;
 
-      // image
-      let img = images[i];
-      const url = img['data'];
-      const img_div = document.getElementById('img_div0');
-      img_div.src = url;
+      // wait
       await timer(delay);
       meshes[i].visible = false;
 

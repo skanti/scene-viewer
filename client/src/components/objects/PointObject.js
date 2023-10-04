@@ -4,9 +4,9 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import MathHelpers from '@/components/MathHelpers.js';
 
 class PointObject {
+
   constructor(ctx) {
-    this.ctx = null;
-    this.renderer = null;
+    this.ctx = ctx;
 
     this.id = "";
     this.type = "";
@@ -17,15 +17,11 @@ class PointObject {
     this.color = null;
     this.colors = null;
     this.badge = "";
+    this.transparent = false;
 
     this.geometry = null;
     this.material = null;
     this.mesh = null;
-    this.transparent = false;
-    this.visible = true;
-
-    this.ctx = ctx;
-    //this.ctx.event_bus.$on("pca", this.on_change_parameters.bind(this));
   }
 
   extract(data) {
@@ -37,30 +33,27 @@ class PointObject {
     }
     // <-
 
-    this.id = data["id"];
-    this.type = data["type"];
-    this.positions = data["positions"];
-    this.res = data["res"];
+    this.id = data.id;
+    this.type = data.type;
+    this.positions = data.positions;
+    this.res = data.res;
 
     if ("trs" in data) {
-      this.trs = data["trs"];
+      this.trs = data.trs;
     }
 
     if ("color" in data) {
-      let c = data["color"];
+      let c = data.color
       if (c.length != 3)
         throw Error("'color' field must have size=3");
       this.color = new THREE.Color(c[0], c[1], c[2]);
     } else if ("colors" in data) {
-      this.colors = data["colors"];
+      this.colors = data.colors
     }
 
-    if ("transparent" in data) {
-      this.transparent = data["transparent"];
-    }
-    if ("visible" in data) {
-      this.visible = data["visible"];
-    }
+    this.transparent = data.transparent || this.transparent;
+
+    this.badge = data.badge || this.badge;
   }
 
   make(data) {
@@ -71,10 +64,9 @@ class PointObject {
   create_mesh() {
     const res = this.res;
     const color = this.color;
-    const transparent = this.color;
-    this.geometry = new THREE.BoxBufferGeometry(res, res, res);
-    this.material = new THREE.MeshLambertMaterial( { color: color, opacity: 0.3, transparent: this.transparent,
-      side: THREE.DoubleSide });
+    this.geometry = new THREE.BoxGeometry(res, res, res);
+    const opacity = this.transparent ? 0.3 : 1.0;
+    this.material = new THREE.MeshStandardMaterial( { color: color, opacity: opacity, transparent: this.transparent });
 
     const positions = this.positions;
     const colors = this.colors;
@@ -94,9 +86,6 @@ class PointObject {
         this.mesh.setColorAt(i, c);
       }
     }
-
-    // visibility
-    this.mesh.visible = this.visible;
     this.mesh.raw = this;
     this.mesh.name = this.id;
 

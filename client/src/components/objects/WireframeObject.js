@@ -1,17 +1,21 @@
 import * as THREE from "three";
 
 import MathHelpers from '@/components/MathHelpers.js';
+import { Line2 } from 'three/examples/jsm/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
+
 
 class WireframeObject {
+
   constructor(ctx) {
-    this.ctx = null;
-    this.renderer = null;
+    this.ctx = ctx;
 
     this.id = "";
     this.type = "";
     this.vertices = [];
     this.edges = [];
-    this.width = 0.1;
+    this.width = 0.01;
 
     this.trs = null;
     this.color = null;
@@ -20,22 +24,19 @@ class WireframeObject {
     this.geometry = null;
     this.material = null;
     this.mesh = null;
-
-    this.ctx = ctx;
-    //this.ctx.event_bus.$on("pca", this.on_change_parameters.bind(this));
   }
 
   extract(data) {
     // -> check if keys present
-    const keys_required = ["id", "type", "vertices", "edges"];
-    for (const k of keys_required) {
+    let keys_required = ["id", "type", "vertices", "edges"];
+    for (let k of keys_required) {
       if (!(k in data))
         throw Error(k + " not in data json");
     }
     // <-
 
     this.id = data.id;
-    this.type = data.type;
+    this.type = data.dtype;
     this.vertices = data.vertices;
     this.edges = data.edges;
 
@@ -43,13 +44,18 @@ class WireframeObject {
       this.trs = data.trs;
     }
 
+    if ("width" in data ) {
+      this.width = data.width;
+    }
+
+
     if ("color" in data) {
-      let c = data.color;
+      let c = data["color"];
       if (c.length != 3)
         throw Error("'color' field must have size=3");
       this.color = new THREE.Color(c[0], c[1], c[2]);
     } else if ("colors" in data) {
-      this.colors = data.colors.flat();
+      this.colors = data["colors"].flat();
     }
     this.has_vertex_colors = this.colors ? true : false;
   }
@@ -59,43 +65,32 @@ class WireframeObject {
     this.create_mesh();
   }
 
-  make_base(width) {
-    const points = [];
-    const points_num = 5;
-    for (let i = 0; i < points_num*2; i++ ) {
-      const l = width;
-      const a = i / points_num * Math.PI;
-      points.push( new THREE.Vector2( Math.cos( a ) * l, Math.sin( a ) * l ) );
-    }
-    const shape = new THREE.Shape(points);
-    return shape;
-  }
-
   create_mesh() {
+    const color = this.color;
 
     const group = new THREE.Group();
-    const poly = this.make_base(this.width);
-    for (const e of this.edges) {
-      const a = this.vertices[e[0]];
-      const b = this.vertices[e[1]];
-      const spline = new THREE.CatmullRomCurve3( [
-        new THREE.Vector3(a[0], a[1], a[2]),
-        new THREE.Vector3(b[0], b[1], b[2])
-      ]);
-      const extrude_settings = { steps: 10, bevelEnabled: false, extrudePath: spline };
-      const geo = new THREE.ExtrudeGeometry(poly, extrude_settings);
-      const mat = new THREE.MeshLambertMaterial({ color: this.color });
-      const mesh = new THREE.Mesh(geo, mat);
-      group.add(mesh);
+    const mat = new LineMaterial({ color: this.color, linewidth: this.width });
+    for (const edge of this.edges) {
+      const p0 = this.vertices[edge[0]];
+      const p1 = this.vertices[edge[1]];
+      const verts = [p0, p1].flat();
+
+      // const geo = new THREE.BufferGeometry();
+      // geo.setAttribute( 'position', new THREE.Float32BufferAttribute( verts, 3 ) );
+      // const line = new THREE.Line(geo, mat);
+      const geo = new LineGeometry();
+      geo.setPositions(verts)
+      const line = new Line2(geo, mat);
+      line.computeLineDistances();
+      group.add(line);
     }
+
+    group.name = this.id;
     this.mesh = group;
     this.mesh.raw = this;
     this.mesh.name = this.id;
+    return this.mesh;
 
-    let mat = MathHelpers.compose_mat4(this.trs);
-    this.mesh.matrixAutoUpdate = false;
-    this.mesh.matrix.copy(mat);
-    this.mesh.updateMatrixWorld(true);
   }
 
 }

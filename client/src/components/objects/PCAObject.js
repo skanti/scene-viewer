@@ -5,28 +5,28 @@ const config = { }
 const math = create(all, config)
 
 class PCAObject {
+  ctx = null;
+  renderer = null;
+
+  id = "";
+  type = "";
+  grid = "";
+  n_components = 0;
+  mean = [];
+  components = [];
+  variances = [];
+  dims = [];
+  res = 0.0;
+
+  parameters = [];
+  points = [];
+  color = new THREE.Color("rgb(100, 100, 100)")
+
+  geometry = null;
+  material = null;
+  mesh = null;
+
   constructor(ctx, renderer) {
-    this.ctx = null;
-    this.renderer = null;
-
-    this.id = "";
-    this.type = "";
-    this.grid = "";
-    this.n_components = 0;
-    this.mean = [];
-    this.components = [];
-    this.variances = [];
-    this.dims = [];
-    this.res = 0.0;
-
-    this.parameters = [];
-    this.points = [];
-    this.color = new THREE.Color("rgb(100, 100, 100)")
-
-    this.geometry = null;
-    this.material = null;
-    this.mesh = null;
-
     this.ctx = ctx;
     this.renderer = renderer;
 
@@ -107,7 +107,7 @@ class PCAObject {
     const res = this.res;
     const color = this.color;
     this.geometry = new THREE.BoxBufferGeometry(res, res, res);
-    this.material = new THREE.MeshLambertMaterial( { color: color });
+    this.material = new THREE.MeshStandardMaterial( { color: color });
 
     const n_positions = this.points.length;
     this.mesh = new THREE.InstancedMesh( this.geometry, this.material, n_positions );

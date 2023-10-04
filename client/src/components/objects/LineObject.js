@@ -6,9 +6,9 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import MathHelpers from '@/components/MathHelpers.js';
 
 class LineObject {
+
   constructor(ctx) {
-    this.ctx = null;
-    this.renderer = null;
+    this.ctx = ctx;
 
     this.id = "";
     this.type = "";
@@ -17,13 +17,11 @@ class LineObject {
 
     this.trs = null;
     this.color = null;
+    this.colors = null;
 
     this.geometry = null;
     this.material = null;
     this.mesh = null;
-
-    this.ctx = ctx;
-    //this.ctx.event_bus.$on("pca", this.on_change_parameters.bind(this));
   }
 
   extract(data) {
@@ -44,10 +42,18 @@ class LineObject {
     }
 
     if ("color" in data) {
-      let c = data["color"];
+      let c = data.color;
       if (c.length != 3)
         throw Error("'color' field must have size 3");
       this.color = new THREE.Color(c[0], c[1], c[2]);
+    }
+
+    if ("colors" in data) {
+      this.colors = data.colors.flat();
+    }
+
+    if ("width" in data) {
+      this.width = data.width;
     }
   }
 
@@ -63,7 +69,12 @@ class LineObject {
     //const path =  new THREE.Float32BufferAttribute( this.points, 3 );
     const path = this.points;
     this.geometry.setPositions(path);
-    this.material = new LineMaterial({ color: this.color, linewidth: this.width });
+    if (this.colors) {
+      this.geometry.setColors(this.colors);
+    }
+    const has_vertex_colors = this.colors ? true : false;
+    this.material = new LineMaterial({ color: this.color, vertexColors: has_vertex_colors,
+      linewidth: this.width });
 
     this.mesh = new Line2( this.geometry, this.material );
     this.mesh.computeLineDistances();
