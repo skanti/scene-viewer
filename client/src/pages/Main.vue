@@ -8,6 +8,8 @@
         :options="[{label: 'Y-up', value: 'y'}, {label: 'Z-up', value: 'z'} ]" @update:model-value="v => onclick_up_axis(v)" />
     </div>
     <div class='row q-gutter-lg'>
+
+      <!-- projects -->
       <q-input class='q-pa-none' v-model='project_dir' label='Project Directory' outlined bottom-slots style='width:400px'>
         <template v-slot:append>
           <q-btn-dropdown class='q-pa-xs' flat>
@@ -22,8 +24,9 @@
         </template>
       </q-input>
 
-      <q-select v-if='project_dir' :model-value='experiment_selected.id' :options='experiments' label='Experiment' style='width:400px'
-        @update:model-value='x => { experiment_selected = x; get_outputs()}' outlined >
+      <!-- experiments -->
+      <q-select v-if="project_dir" :model-value="experiment_selected.id" :options='experiments' label='Experiment' style='width:400px'
+        @update:model-value="x => { experiment_selected = x; get_outputs()}" outlined >
         <template v-slot:prepend>
           <q-btn icon='fas fa-copy' color='dark' @click='e => click_copy_to_clipboard(e,
             experiment_selected.id)' dense flat/>
@@ -36,10 +39,12 @@
             </q-item-section>
           </q-item>
         </template>
-        <template v-slot:after>
-          <q-btn color='blue-5' icon='fas fa-sync' @click='get_outputs' outline dense />
+        <template v-slot:append>
+          <q-btn color="blue" icon="fas fa-sync" @click.stop='get_experiments' flat dense />
         </template>
       </q-select>
+
+      <!-- outputs -->
       <q-select v-if='experiment_selected' v-model='output_selected' :options='outputs.map(x => x.id)' label='Output' style='width:400px'
         @update:model-value='x => { download_output() }' outlined >
         <template v-slot:prepend>
@@ -47,6 +52,9 @@
         </template>
         <template v-slot:after>
           <q-btn color='blue-5' icon='fas fa-download' @click='download_output' outline dense />
+        </template>
+        <template v-slot:append>
+          <q-btn color="blue" icon="fas fa-sync" @click.stop='get_experiments' flat dense />
         </template>
       </q-select>
       <q-btn :loading='loading > 0' :color='loading? "blue-5" : "green-5"' icon='fas fa-check-circle' flat />
