@@ -54,7 +54,7 @@
           <q-btn color='blue-5' icon='fas fa-download' @click='download_output' outline dense />
         </template>
         <template v-slot:append>
-          <q-btn color="blue" icon="fas fa-sync" @click.stop='get_experiments' flat dense />
+          <q-btn color="blue" icon="fas fa-sync" @click.stop='get_outputs' flat dense />
         </template>
       </q-select>
       <q-btn :loading='loading > 0' :color='loading? "blue-5" : "green-5"' icon='fas fa-check-circle' flat />
