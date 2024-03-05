@@ -86,6 +86,7 @@
           </div>
         </div>
         <div style="margin-top:50px">
+          <q-btn class='q-my-sm' size='sm' label='GT' color='primary' text-color='white' square dense unelevated />
           <img :src='img_src.gt' style='width:100%'/>
         </div>
       </div>

@@ -155,7 +155,8 @@ export default {
           this.loading -= 1;
         });
 
-      this.img_src.pred = `/api/download?project_dir=${this.project_dir}&experiment_name=${experiment_name}&output_name=${output_name}&out=pred.png`;
+      this.img_src.pred = `/api/download?project_dir=${this.project_dir}&experiment_name=${experiment_name}&output_name=${output_name}&out=pred.jpg`;
+      this.img_src.gt = `/api/download?project_dir=${this.project_dir}&experiment_name=${experiment_name}&output_name=${output_name}&out=gt.jpg`;
     },
     render_images(images) {
       images.forEach((img, i) => {
