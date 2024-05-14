@@ -82,8 +82,12 @@ export default {
       if (!project_dir)
         return;
       // add to histroy
-      const known = this.project_dir_history.includes(this.project_dir);
-      if (!known) {
+      const is_known = this.project_dir_history.includes(this.project_dir);
+      if (is_known) {
+        const idx = this.project_dir_history.indexOf(this.project_dir);
+        this.project_dir_history.splice(idx, 1);
+        this.project_dir_history.unshift(this.project_dir);
+      } else {
         this.project_dir_history.unshift(this.project_dir);
         this.project_dir_history = this.project_dir_history.slice(0, 5);
       }
